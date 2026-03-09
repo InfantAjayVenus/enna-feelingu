@@ -56,7 +56,7 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 **Acceptance Criteria**
 
 - AC1.1: When the user opens the app for the first time, they see a screen that lets them start a new check-in immediately — no setup required to reach it.
-- AC1.2: The check-in form shows a mood input that accepts whole numbers from 1 to 10 only. Values outside this range cannot be submitted.
+- AC1.2: The check-in form shows a mood input that accepts whole numbers from 1 to 10 only. Values outside this range cannot be submitted. @bee, this input is best in the form of a set of buttons / a slider. We could also use emojis to represent mood. Either 10 buttons with equivalent emojis on it. If its a slider, a single emoji that changes as we slide the pointer to a number.
 - AC1.3: Moods 1–4 are visually distinguished as negative, 5 as neutral, and 6–10 as positive — using color, label, or icon — so the user knows what tier they are selecting before they confirm.
 - AC1.4: The check-in form includes a free-text field for "what I did this hour." This field is optional — a check-in with only a mood score can be saved.
 - AC1.5: When the user submits a check-in, it is saved to local device storage with a timestamp accurate to the minute.
@@ -86,13 +86,13 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 
 ### Slice 3 — DND Hours and Skip Check-In
 
-**What this delivers:** Two quality-of-life features that make the hourly cadence sustainable. DND suppresses notifications during a window (e.g., overnight). Skip carries the previous entry forward so the user is not forced to retype when nothing has changed.
+**What this delivers:** Two quality-of-life features that make the hourly cadence sustainable. DND suppresses notifications during a window (e.g., overnight). Skip carries the previous entry forward so the user is not forced to retype when nothing has changed. 
 
 **Why third:** Without these, the app becomes annoying quickly. DND prevents 2am interruptions. Skip prevents friction when you're doing the same thing you were doing an hour ago.
 
 **Acceptance Criteria**
 
-**DND**
+**DND** @bee, given that we explicitly have an active hours window, I don't think we need a separate DND feature.
 - AC3.1: The user can configure a DND window (start time and end time) in settings. This is separate from the active hours window.
 - AC3.2: No notifications fire during the DND window, even if the DND window overlaps with the active hours window.
 - AC3.3: The user can enable or disable DND without changing the active hours configuration.
@@ -103,6 +103,10 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 - AC3.6: When the user selects Skip, a new entry is created using the mood score and activity text from the most recent saved entry, with the current timestamp.
 - AC3.7: If there is no previous entry to copy from, the Skip option is hidden or disabled.
 - AC3.8: A skipped entry is stored and visible in history the same way a manually entered one is — it is not discarded.
+
+@bee, the entry that is skipped should have that state persisted along with the rest of the info.
+@bee, could we add an option for the user such that the newest entry after skipping could be used to override the previously skipped entries? If we're doing this, we should also persist the ID of the entry from which the skipped entries were overrode.
+@bee, we should also explore option for auto-skip if the user hasn't responded for a specific time say 25 minutes.
 
 ---
 
@@ -116,7 +120,7 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 
 - AC4.1: The user can access a "log a past entry" flow from within the app — reachable from the history view or a clearly labelled action.
 - AC4.2: In this flow, the user can select any past hour (date + hour) for which no entry exists yet.
-- AC4.3: Hours that already have an entry are either hidden from the picker or clearly marked as already logged.
+- AC4.3: Hours that already have an entry are either hidden from the picker or clearly marked as already logged. @bee, let's not hide, rather visibly mark it as already logged.
 - AC4.4: The check-in form for a retroactive entry is identical to the real-time form — same mood input, same activity text field, same validation.
 - AC4.5: A saved retroactive entry appears in the history view in its correct chronological position, not appended to the bottom as if it were new.
 - AC4.6: The retroactive entry is stored with the selected historical timestamp, not the time of entry.
@@ -133,7 +137,7 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 
 **List view (ships first)**
 - AC5.1: The user can navigate to a history screen that shows all past entries in reverse-chronological order (most recent first).
-- AC5.2: Each entry in the list displays: the date and hour it was recorded, the mood score, and the activity text (or a placeholder if no text was entered).
+- AC5.2: Each entry in the list displays: the date and hour it was recorded, the mood score, and the activity text, if text is empty we just show the rest.
 - AC5.3: The mood score is shown with the same negative / neutral / positive visual treatment used in the check-in form.
 - AC5.4: The list is scrollable and handles at least several months of hourly entries without becoming unusably slow.
 - AC5.5: If there are no entries yet, the screen shows an empty state message rather than a blank screen.
@@ -144,6 +148,8 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 - AC5.8: A mood chart is shown for the selected day, plotting mood score (y-axis) against hour (x-axis), so the user can see their emotional arc across the day.
 - AC5.9: The user can zoom out to a weekly view showing average or representative mood per day.
 - AC5.10: The user can zoom out further to a monthly view showing average or representative mood per week.
+
+@bee, the order of the AC should be as the largest possible view first, then zoom in, not zoom out.
 
 ---
 
@@ -158,14 +164,16 @@ Slices are ordered by "get the core loop working first." Each slice is independe
 - AC6.1: The user can find an export option within the app — in settings or on the history screen — without it being buried more than two taps deep.
 - AC6.2: The user can choose between CSV and JSON as the export format.
 - AC6.3: Triggering an export produces a file that is shared via the device's native share sheet (so the user can save it to cloud storage, email it, or open it in another app).
-- AC6.4: The exported file includes every saved entry: timestamp, mood score, activity text, and whether the entry was a skip or a manual entry.
+- AC6.4: The exported file includes every saved entry: timestamp, mood score, activity text, and whether the entry was a skip or a manual entry. @bee, the user should be able to choose a specific window to export, with smart defaults like today's logs, this week's logs etc., Only windows with valid entries should be allowed to be exported other wise we show error toast saying "Nothing to export, please log some entries of choose a different time window"
 - AC6.5: A CSV export opens correctly in a spreadsheet application (one row per entry, headers in the first row, no broken encoding for special characters).
 - AC6.6: A JSON export is valid, parseable JSON (an array of objects, one per entry).
-- AC6.7: If there are no entries to export, the app shows a message rather than producing an empty or broken file.
+- AC6.7: If there are no entries to export, the app shows a message rather than producing an empty or broken file. @bee, I'd rather have the export button disabled when there are no entries.
 
 ---
 
 ## Milestone Map
+
+@bee, refer to the comments in the previous section to refine this section.
 
 ### Phase 1 — Walking Skeleton (Slice 1)
 The core loop works. The user can open the app, log a mood and activity, and see it saved. No notifications yet.
@@ -201,9 +209,13 @@ This is a greenfield app. Suggested ownership boundaries:
 ## Open Questions
 
 - OQ1: Notification action buttons (the "WhatsApp style" second-preference UX) — are these achievable early enough to be worth exploring in Phase 2, or should they be explicitly deferred until the developer is more comfortable with the React Native notification ecosystem?
+  Answer: Let's add a timeboxed spike for this as part of phase-2 after the base implementation is done. We can plan for the implementation later in the development.
 - OQ2: The floating popup (MS Authenticator style, first-preference UX) — this likely requires a foreground service or overlay permission on Android. Should this be captured as a future enhancement or parked indefinitely given the complexity?
+ Answer: This could be a part of the spike as mentioned earlier. Thus narrowing the scope of the spike down to deciding which route we can take.
 - OQ3: Should the "active hours" window and the "DND" window be unified into a single "active hours" concept (notifications only fire between these times), or does the user genuinely need both independently?
+ Answer: As mentioned in a comment in a previous section, we don't need a DND section, if we're only firing the notifications in active hours. Although we could provide more granularity for the user to select the active hours.
 - OQ4: Is there a maximum number of hours the user wants notifications to fire per day? (Android has a limit on scheduled exact alarms — worth validating this does not become a constraint for wide active windows.)
+ Answer: There's no specific number for this, but given it's hourly notification, the maximum we could go for is 24 a day. But we'll need to know the limitations in Android to take any informed decisions.
 - OQ5: Excel export — deferred, but should it use a native `.xlsx` format or is a `.xls`-compatible CSV sufficient for the user's purposes?
 
 ---
