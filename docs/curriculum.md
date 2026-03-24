@@ -11,15 +11,15 @@ Experienced React/web developer, new to React Native and mobile.
 ## Module 1: Orientation — React Native for Web Developers
 Goal: Kill the mental overhead of the unfamiliar runtime. App running on device, project structure fully mapped.
 
-- [ ] Step 1.1: Run the app on device via Expo Go — understand the Metro bundler hot-reload loop
-- [ ] Step 1.2: Map Expo Router to Next.js — file-based routes, `_layout.tsx`, route groups, Stack vs Tab navigator
-- [ ] Step 1.3: StyleSheet vs CSS — no cascade, no units (dp), `StyleSheet.create` vs inline styles
-- [ ] Step 1.4: The View / Text / ScrollView trifecta — web element equivalents
-- [ ] Step 1.5: Flexbox on mobile — `flexDirection: 'column'` default, density-independent pixels
-- [ ] Step 1.6: Safe area — `SafeAreaView`, `useSafeAreaInsets()`, vs CSS `env(safe-area-inset-*)`
-- [ ] Step 1.7: `Platform.select` and `Platform.OS` — compile-time vs runtime splits
-- [ ] Step 1.8: Typed routes and the `@/` alias — Expo Router static types, `tsconfig.json` path mapping
-- [ ] Step 1.9: React Compiler caveat — no manual `useMemo`/`useCallback`; the one legitimate exception
+- [x] Step 1.1: Run the app on device via Expo Go — understand the Metro bundler hot-reload loop
+- [x] Step 1.2: Map Expo Router to Next.js — file-based routes, `_layout.tsx`, route groups, Stack vs Tab navigator
+- [x] Step 1.3: StyleSheet vs CSS — no cascade, no units (dp), `StyleSheet.create` vs inline styles
+- [x] Step 1.4: The View / Text / ScrollView trifecta — web element equivalents
+- [x] Step 1.5: Flexbox on mobile — `flexDirection: 'column'` default, density-independent pixels
+- [x] Step 1.6: Safe area — `SafeAreaView`, `useSafeAreaInsets()`, vs CSS `env(safe-area-inset-*)`
+- [x] Step 1.7: `Platform.select` and `Platform.OS` — compile-time vs runtime splits
+- [x] Step 1.8: Typed routes and the `@/` alias — Expo Router static types, `tsconfig.json` path mapping
+- [x] Step 1.9: React Compiler caveat — no manual `useMemo`/`useCallback`; the one legitimate exception
 
 ---
 
