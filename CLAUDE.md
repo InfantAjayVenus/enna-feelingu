@@ -54,3 +54,5 @@ app/
 - **Typed routes enabled** (`experiments.typedRoutes: true`) — `expo-router` routes are statically typed
 - **TypeScript strict mode** on
 - App scheme: `ennafeelingu`
+
+Read `.claude/BOUNDARIES.md` for module boundary rules.
