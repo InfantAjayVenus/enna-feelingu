@@ -47,7 +47,7 @@
     {
       "id": "theme-sync-app-shell",
       "title": "Theme sync and app shell",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Keep or replace the root theme bridge",
         "Respect system light and dark mode",
