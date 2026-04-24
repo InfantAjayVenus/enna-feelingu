@@ -22,7 +22,7 @@
     {
       "id": "babel-metro-setup",
       "title": "Babel and Metro setup",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Add babel.config.js if missing",
         "Keep babel-preset-expo",
