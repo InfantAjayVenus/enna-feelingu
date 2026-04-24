@@ -68,7 +68,7 @@
     {
       "id": "icons-status",
       "title": "Icons and status symbols",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Standardize on Material Icons",
         "Keep or extend Expo Symbols fallback",
