@@ -90,7 +90,7 @@
     {
       "id": "asset-layout-alignment",
       "title": "Asset and layout alignment",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Update splash and adaptive icon colors",
         "Use native emojis and Material icons for v1",
