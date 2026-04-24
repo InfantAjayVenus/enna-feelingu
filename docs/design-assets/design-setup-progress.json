@@ -35,7 +35,7 @@
     {
       "id": "theme-token-layer",
       "title": "Theme and token layer",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Replace starter Colors and Fonts primitives",
         "Add semantic tokens",
