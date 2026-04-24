@@ -101,7 +101,7 @@
     {
       "id": "accessibility",
       "title": "Accessibility checks",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Keep touch targets at or above 48dp",
         "Maintain WCAG AA contrast",

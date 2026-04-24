@@ -1,6 +1,7 @@
 import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { PressScale } from '@/components/motion/press-scale';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -13,10 +14,12 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
 
   return (
     <ThemedView>
-      <TouchableOpacity
+      <PressScale
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityState={{ expanded: isOpen }}>
         <IconSymbol
           name="chevron.right"
           size={18}
@@ -26,7 +29,7 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
         />
 
         <ThemedText type="defaultSemiBold">{title}</ThemedText>
-      </TouchableOpacity>
+      </PressScale>
       {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
     </ThemedView>
   );
@@ -36,7 +39,8 @@ const styles = StyleSheet.create({
   heading: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
+    paddingVertical: 12,
   },
   content: {
     marginTop: 6,

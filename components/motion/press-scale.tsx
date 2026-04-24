@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Pressable, type PressableProps } from 'react-native';
+import { StyleSheet, Pressable, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,7 +8,11 @@ import Animated, {
 
 import { motion } from '@/constants/theme';
 
-type Props = PropsWithChildren<PressableProps>;
+type Props = PropsWithChildren<
+  PressableProps & {
+    style?: StyleProp<ViewStyle>;
+  }
+>;
 
 export function PressScale({ children, onPressIn, onPressOut, ...props }: Props) {
   const scale = useSharedValue(1);
@@ -20,6 +24,7 @@ export function PressScale({ children, onPressIn, onPressOut, ...props }: Props)
   return (
     <Pressable
       {...props}
+      style={[styles.root, props.style]}
       onPressIn={(event) => {
         scale.value = withTiming(motion.pressScale, { duration: motion.fast });
         onPressIn?.(event);
@@ -32,3 +37,10 @@ export function PressScale({ children, onPressIn, onPressOut, ...props }: Props)
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    minHeight: 48,
+    minWidth: 48,
+  },
+});
