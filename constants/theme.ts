@@ -111,6 +111,13 @@ export const buttonVariants = {
   disabled: ui.buttonDisabled,
 } as const;
 
+export const motion = {
+  fast: 150,
+  normal: 250,
+  slow: 350,
+  pressScale: 0.96,
+} as const;
+
 export function getMoodColor(score: number) {
   if (score <= 4) return 'text-mood-negative';
   if (score === 5) return 'text-mood-neutral';

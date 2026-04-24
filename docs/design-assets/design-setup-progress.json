@@ -78,7 +78,7 @@
     {
       "id": "motion-feedback",
       "title": "Motion and feedback",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Preserve reanimated",
         "Preserve gesture-handler",
