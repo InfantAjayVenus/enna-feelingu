@@ -58,7 +58,7 @@
     {
       "id": "typography",
       "title": "Typography",
-      "status": "pending",
+      "status": "completed",
       "tasks": [
         "Load Inter as the primary font",
         "Keep system fallback fonts",
