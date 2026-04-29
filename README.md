@@ -1,50 +1,125 @@
-# Welcome to your Expo app 👋
+# enna-feelingu
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo Router app for a mood check-in workflow. The UI is driven by the design system in `docs/design-assets/DESIGN.md` and `docs/design-assets/DESIGN-TOKENS.md`.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Start
 
 ```bash
-npm run reset-project
+pnpm install
+pnpm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Useful commands:
 
-## Learn more
+```bash
+pnpm lint
+pnpm android
+pnpm ios
+pnpm web
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+If you change Babel, Metro, or NativeWind config, restart with cache cleared:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start --clear
+```
 
-## Join the community
+## Design System
 
-Join our community of developers creating universal apps.
+The project uses a layered token setup:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Primitive tokens in `tailwind.config.js`
+2. Semantic/component tokens in `constants/theme.ts`
+3. Shared base components in `components/`
+
+### Core files
+
+- `constants/theme.ts` exposes:
+  - `Colors` for light/dark palette values
+  - `Fonts` for font family fallbacks
+  - `ui`, `sliderStyles`, `cardVariants`, `buttonVariants`
+  - `motion` timing tokens
+  - `getMoodColor(score)` and `getMoodBg(score)`
+- `components/themed-text.tsx` and `components/themed-view.tsx` are the base text/surface primitives.
+- `components/ui/icon-symbol.tsx` maps SF Symbols names to Material Icons on Android/web.
+- `components/ui/status-icon.tsx` renders the status icons used by the design system.
+- `components/motion/press-scale.tsx` applies the standard press scale feedback.
+- `components/haptic-tab.tsx` adds tab press feedback and the shared 48dp hit area.
+
+### How to use tokens
+
+Prefer the shared tokens instead of hardcoded values:
+
+```tsx
+import { Text, View } from 'react-native';
+import { Colors, ui, getMoodColor } from '@/constants/theme';
+
+export function Example() {
+  return (
+    <View style={{ backgroundColor: Colors.light.background }}>
+      <Text className={ui.textPrimary}>Mood</Text>
+      <Text className={getMoodColor(8)}>Good</Text>
+    </View>
+  );
+}
+```
+
+Use the shared containers for common UI patterns:
+
+```tsx
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { PressScale } from '@/components/motion/press-scale';
+
+export function Card() {
+  return (
+    <ThemedView style={{ padding: 16 }}>
+      <ThemedText type="subtitle">Title</ThemedText>
+      <PressScale onPress={() => {}}>
+        <ThemedText type="link">Action</ThemedText>
+      </PressScale>
+    </ThemedView>
+  );
+}
+```
+
+### Motion and feedback rules
+
+- Use `motion.fast`, `motion.normal`, and `motion.slow` for animation timing.
+- Use `PressScale` for press feedback that should scale to `0.96`.
+- Use `HapticTab` for tab navigation.
+- Keep touch targets at or above `48dp`.
+
+### Accessibility rules
+
+- Do not rely on emoji alone for meaning.
+- Keep contrast aligned with the light/dark palette.
+- Use semantic labels and state where needed.
+
+## App structure
+
+```text
+app/
+  _layout.tsx        Root theme bridge, font loading, status bar
+  (tabs)/
+    _layout.tsx      Bottom tabs
+    index.tsx        Home screen
+    explore.tsx      Design-system sample screen
+  modal.tsx          Modal example
+components/
+  themed-*           Shared base primitives
+  ui/                Icons and collapsible UI
+  motion/            Motion helpers
+```
+
+## Design references
+
+- `docs/design-assets/DESIGN.md`
+- `docs/design-assets/DESIGN-TOKENS.md`
+- `docs/design-assets/DESIGN-SETUP-CHECKLIST.md`
+
+## Notes
+
+- The app uses Expo Router and NativeWind.
+- Keep `app/_layout.tsx` as the root place for theme and font loading.
+- If you add new UI primitives, prefer extending the shared token layer over duplicating styles in screens.
