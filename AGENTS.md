@@ -45,7 +45,10 @@
   1. RED: Write a failing test expectation (even if just as a comment/TODO)
   2. GREEN: Implement minimum code to satisfy the requirement
   3. REFACTOR: Improve code structure while maintaining behavior
-- Since no test runner is configured, document test intentions clearly in code
+- Unit tests are configured with Jest
+  - Run tests with `pnpm test`
+  - Test files should be placed in `__tests__` directories or named `*.test.ts`/`*.spec.ts`
+  - See existing tests in `__tests__/constants/theme.test.ts` as an example
 
 ## How to investigate
 
