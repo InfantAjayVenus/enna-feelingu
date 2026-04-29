@@ -1,5 +1,5 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { getStatusIconName } from '@/components/ui/icon-mapping';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { STATUS_ICON_MAP } from '@/components/ui/icon-mapping';
 
 export function StatusIcon({
   status,
@@ -10,5 +10,5 @@ export function StatusIcon({
   size?: number;
   color: string;
 }) {
-  return <IconSymbol name={getStatusIconName(status)} size={size} color={color} />;
+  return <MaterialIcons name={STATUS_ICON_MAP[status]} size={size} color={color} />;
 }
