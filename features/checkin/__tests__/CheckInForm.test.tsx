@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CheckInForm } from '../CheckInForm';
 import { saveEntry } from '@/store';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 // Mock store
 jest.mock('@/store', () => ({
@@ -68,7 +69,14 @@ describe('CheckInForm Integration', () => {
       })
     );
     
-    // 5. Verify navigation
+    // 5. Verify toast
+    expect(Toast.show).toHaveBeenCalledWith({
+      type: 'success',
+      text1: 'Success',
+      text2: 'Check-in saved successfully!',
+    });
+    
+    // 6. Verify navigation
     expect(router.push).toHaveBeenCalledWith('/success');
   });
 
