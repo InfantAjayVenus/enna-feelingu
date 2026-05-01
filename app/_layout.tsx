@@ -18,7 +18,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: 'index',
 };
 
 const createNavTheme = (scheme: 'light' | 'dark'): Theme => {
@@ -63,7 +63,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="success" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />

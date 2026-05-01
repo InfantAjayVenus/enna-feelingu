@@ -19,11 +19,12 @@ export default function SuccessScreen() {
         Your mood has been recorded. See you next hour!
       </ThemedText>
       
-      <Link href="/(tabs)" replace asChild>
-        <PressScale style={{...styles.button, backgroundColor: primaryColor }}>
+      <Link href="/" replace asChild>
+        <PressScale style={[styles.button, { backgroundColor: primaryColor }]}>
           <ThemedText style={styles.buttonText}>Done</ThemedText>
         </PressScale>
       </Link>
+
     </ThemedView>
   );
 }
