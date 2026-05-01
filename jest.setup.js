@@ -37,3 +37,8 @@ jest.mock('expo-crypto', () => ({
 jest.mock('expo-symbols', () => ({
   SymbolView: 'SymbolView',
 }));
+
+jest.mock('react-native-toast-message', () => ({
+  show: jest.fn(),
+  hide: jest.fn(),
+}));
