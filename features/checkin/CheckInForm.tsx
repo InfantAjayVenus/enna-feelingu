@@ -3,6 +3,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import { MoodSlider } from './MoodSlider';
 import { useCheckinForm } from './use-checkin-form';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { PressScale } from '@/components/motion/press-scale';
@@ -18,6 +19,11 @@ export function CheckInForm() {
     try {
       const success = await submit();
       if (success) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Check-in saved successfully!',
+        });
         router.push('/success' as any);
       }
     } catch (error) {
