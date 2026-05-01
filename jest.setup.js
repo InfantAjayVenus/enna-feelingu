@@ -1,27 +1,39 @@
-// Mock expo and react-native modules
-jest.mock('expo', () => ({
-  Constants: {
-    manifest: {
-      extra: {},
-    },
-  },
-  // Add other expo modules as needed
+/* global jest */
+
+// Mock expo-sqlite
+jest.mock('expo-sqlite', () => ({
+  openDatabaseAsync: jest.fn().mockResolvedValue({
+    execAsync: jest.fn().mockResolvedValue(null),
+    runAsync: jest.fn().mockResolvedValue({ lastInsertRowId: 1, changes: 1 }),
+    getAllAsync: jest.fn().mockResolvedValue([]),
+  }),
 }));
 
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  return {
-    ...RN,
-    Platform: {
-      ...RN.Platform,
-      select: (obj) => obj.default,
-    },
-  };
-});
-
-// Mock expo-constants if used directly
+// Mock other expo modules as needed
 jest.mock('expo-constants', () => ({
   manifest: {
     extra: {},
   },
+  expoConfig: {
+    extra: {},
+  },
+}));
+
+jest.mock('expo-font', () => ({
+  isLoaded: jest.fn().mockReturnValue(true),
+  loadAsync: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  notificationAsync: jest.fn(),
+  selectionAsync: jest.fn(),
+}));
+
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn().mockReturnValue('12345678-1234-4321-89ab-1234567890ab'),
+}));
+
+jest.mock('expo-symbols', () => ({
+  SymbolView: 'SymbolView',
 }));
