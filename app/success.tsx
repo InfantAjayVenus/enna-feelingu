@@ -1,10 +1,10 @@
+import { PressScale } from '@/components/motion/press-scale';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { Link, Stack } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Link, Stack } from 'expo-router';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
-import { PressScale } from '@/components/motion/press-scale';
-import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function SuccessScreen() {
   const primaryColor = useThemeColor({}, 'primary');
@@ -20,7 +20,7 @@ export default function SuccessScreen() {
       </ThemedText>
       
       <Link href="/" replace asChild>
-        <PressScale style={[styles.button, { backgroundColor: primaryColor }]}>
+        <PressScale style={{ ...styles.button, backgroundColor: primaryColor }}>
           <ThemedText style={styles.buttonText}>Done</ThemedText>
         </PressScale>
       </Link>
