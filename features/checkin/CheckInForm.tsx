@@ -27,14 +27,18 @@ export function CheckInForm() {
         router.push('/success' as any);
       }
     } catch (error) {
-      // Error handling is handled in the hook, but we could show a Toast here if needed
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to save check-in. Please try again.',
+      });
     }
   };
 
   return (
     <ThemedView style={styles.container} testID="check-in-form">
       <MoodSlider value={mood} onValueChange={setMood} />
-      
+
       <View style={styles.inputContainer}>
         <ThemedText style={styles.label}>What I did this hour</ThemedText>
         <TextInput
@@ -53,7 +57,7 @@ export function CheckInForm() {
         onPress={handleSubmit}
         disabled={!isValid || isSubmitting}
         style={[
-          styles.button, 
+          styles.button,
           { backgroundColor: themeColors.primary },
           (!isValid || isSubmitting) && { backgroundColor: themeColors.statusSkipped, opacity: 0.6 }
         ]}
