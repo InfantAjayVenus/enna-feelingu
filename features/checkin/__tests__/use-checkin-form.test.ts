@@ -67,20 +67,20 @@ describe('useCheckinForm', () => {
         overriddenByEntryId: null,
       })
     );
-    
+
     // Assert UUID format
     const callArgs = (saveEntry as jest.Mock).mock.calls[0][0];
     expect(callArgs.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
-    
-    // Assert timestamp format (YYYY-MM-DDTHH:mm:00)
-    expect(callArgs.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00$/);
+
+    // Assert timestamp format (ISO UTC)
+    expect(callArgs.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/);
   });
 
   it('handles submission errors', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const error = new Error('Database failure');
     (saveEntry as jest.Mock).mockRejectedValueOnce(error);
-    
+
     const { result } = renderHook(() => useCheckinForm());
 
     act(() => {
@@ -122,5 +122,36 @@ describe('useCheckinForm', () => {
     });
 
     expect(result.current.isSubmitting).toBe(false);
+  });
+
+  it('prevents duplicate submissions', async () => {
+    let resolveSave: (value: void | PromiseLike<void>) => void;
+    const savePromise = new Promise<void>((resolve) => {
+      resolveSave = resolve;
+    });
+    (saveEntry as jest.Mock).mockReturnValue(savePromise);
+
+    const { result } = renderHook(() => useCheckinForm());
+
+    act(() => {
+      result.current.setMood(5);
+    });
+
+    // Call submit twice immediately
+    let p1: Promise<boolean | undefined>;
+    let p2: Promise<boolean | undefined>;
+    act(() => {
+      p1 = result.current.submit();
+      p2 = result.current.submit();
+    });
+
+    await act(async () => {
+      resolveSave!();
+      await p1!;
+      await p2!;
+    });
+
+    // saveEntry should only be called once
+    expect(saveEntry).toHaveBeenCalledTimes(1);
   });
 });
