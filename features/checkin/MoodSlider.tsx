@@ -33,7 +33,7 @@ export function MoodSlider({ value, onValueChange }: MoodSliderProps) {
       <View style={styles.emojiContainer}>
         <ThemedText style={styles.emojiText}>{value ? MOOD_EMOJIS[value] : '❓'}</ThemedText>
       </View>
-      
+
       <View style={styles.sliderWrapper}>
         <LinearGradient
           colors={[themeColors.moodNegative, themeColors.moodPositive]}
@@ -58,16 +58,16 @@ export function MoodSlider({ value, onValueChange }: MoodSliderProps) {
       <View style={styles.graduations}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
           <View key={num} style={styles.graduationPoint}>
-            <View 
+            <View
               style={[
-                styles.tick, 
+                styles.tick,
                 { backgroundColor: themeColors.textSecondary },
                 value === num && { backgroundColor: themeColors.primary, height: 10 }
-              ]} 
+              ]}
             />
-            <ThemedText 
+            <ThemedText
               style={[
-                styles.graduationText, 
+                styles.graduationText,
                 value === num && { opacity: 1, fontWeight: '700', color: themeColors.primary }
               ]}
             >

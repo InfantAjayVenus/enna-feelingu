@@ -5,14 +5,14 @@ import { MoodSlider } from '../MoodSlider';
 describe('MoodSlider', () => {
   it('renders correctly with null value', () => {
     const { getByTestId, getByText } = render(<MoodSlider value={null} onValueChange={() => {}} />);
-    
+
     expect(getByTestId('mood-slider-container')).toBeTruthy();
     expect(getByText('❓')).toBeTruthy();
   });
 
   it('renders correctly with a selected value', () => {
     const { getByText, getAllByText } = render(<MoodSlider value={7} onValueChange={() => {}} />);
-    
+
     expect(getByText('😊')).toBeTruthy();
     // 7 appears exactly once in the graduation points
     expect(getAllByText('7').length).toBe(1);
@@ -45,10 +45,10 @@ describe('MoodSlider', () => {
   it('calls onValueChange when slider value changes', () => {
     const onValueChange = jest.fn();
     const { getByTestId } = render(<MoodSlider value={5} onValueChange={onValueChange} />);
-    
+
     const slider = getByTestId('mood-slider');
     fireEvent(slider, 'onValueChange', 8);
-    
+
     expect(onValueChange).toHaveBeenCalledWith(8);
   });
 });

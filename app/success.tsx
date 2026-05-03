@@ -12,13 +12,13 @@ export default function SuccessScreen() {
   return (
     <ThemedView style={styles.container}>
       <Stack.Screen options={{ title: 'Success', headerLeft: () => null, headerShown: false }} />
-      
+
       <ThemedText style={styles.emoji}>✅</ThemedText>
       <ThemedText type="title">Check-in Saved!</ThemedText>
       <ThemedText style={styles.message}>
         Your mood has been recorded. See you next hour!
       </ThemedText>
-      
+
       <Link href="/" replace asChild>
         <PressScale style={{ ...styles.button, backgroundColor: primaryColor }}>
           <ThemedText style={styles.buttonText}>Done</ThemedText>

@@ -10,7 +10,7 @@ export default function HomeScreen() {
         <ThemedText type="title">How are you feeling?</ThemedText>
         <ThemedText style={styles.subtitle}>Record your mood for this hour</ThemedText>
       </ThemedView>
-      
+
       <CheckInForm />
     </ScrollView>
   );

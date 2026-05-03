@@ -35,32 +35,32 @@ describe('CheckInForm Integration', () => {
 
   it('enables submit button when mood is selected', () => {
     const { getByTestId } = render(<CheckInForm />);
-    
+
     const slider = getByTestId('mood-slider');
     fireEvent(slider, 'onValueChange', 7);
-    
+
     const submitButton = getByTestId('submit-button');
     expect(submitButton.props.accessibilityState.disabled).toBe(false);
   });
 
   it('completes the full check-in flow', async () => {
     const { getByTestId } = render(<CheckInForm />);
-    
+
     // 1. Select mood
     const slider = getByTestId('mood-slider');
     fireEvent(slider, 'onValueChange', 9);
-    
+
     // 2. Enter activity
     const activityInput = getByTestId('activity-input');
     fireEvent.changeText(activityInput, 'Building the future');
-    
+
     // 3. Submit
     const submitButton = getByTestId('submit-button');
-    
+
     await act(async () => {
       fireEvent.press(submitButton);
     });
-    
+
     // 4. Verify saveEntry call
     expect(saveEntry).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -68,14 +68,14 @@ describe('CheckInForm Integration', () => {
         activity: 'Building the future',
       })
     );
-    
+
     // 5. Verify toast
     expect(Toast.show).toHaveBeenCalledWith({
       type: 'success',
       text1: 'Success',
       text2: 'Check-in saved successfully!',
     });
-    
+
     // 6. Verify navigation
     expect(router.push).toHaveBeenCalledWith('/success');
   });
@@ -89,9 +89,9 @@ describe('CheckInForm Integration', () => {
     (saveEntry as jest.Mock).mockReturnValue(savePromise);
 
     const { getByTestId, getByText } = render(<CheckInForm />);
-    
+
     fireEvent(getByTestId('mood-slider'), 'onValueChange', 5);
-    
+
     await act(async () => {
       fireEvent.press(getByTestId('submit-button'));
     });
@@ -111,18 +111,18 @@ describe('CheckInForm Integration', () => {
   it('handles submission errors gracefully', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     (saveEntry as jest.Mock).mockRejectedValueOnce(new Error('Save failed'));
-    
+
     const { getByTestId, getByText } = render(<CheckInForm />);
-    
+
     fireEvent(getByTestId('mood-slider'), 'onValueChange', 5);
-    
+
     await act(async () => {
       fireEvent.press(getByTestId('submit-button'));
     });
-    
+
     expect(saveEntry).toHaveBeenCalled();
     expect(getByText('Submit')).toBeTruthy(); // Reverts from 'Saving...'
-    
+
     consoleSpy.mockRestore();
   });
 });
