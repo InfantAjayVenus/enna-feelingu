@@ -4,23 +4,26 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { CheckInDrawer } from '@/features/checkin/CheckInDrawer';
 import { CheckInForm } from '@/features/checkin/CheckInForm';
-import { EntryList } from '@/features/checkin/EntryList';
+import { EntryList } from '@/features/history/EntryList';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CheckInEntry, getEntries } from '@/store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function HomeScreen() {
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
 
   const fetchEntries = useCallback(async () => {
     try {
+      setError(null);
       const allEntries = await getEntries();
       
       // Filter for today's entries (local day)
@@ -33,8 +36,14 @@ export default function HomeScreen() {
       });
       
       setEntries(todayEntries);
-    } catch (error) {
-      console.error('Failed to fetch entries:', error);
+    } catch (err) {
+      console.error('Failed to fetch entries:', err);
+      setError('Failed to load entries');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Could not load today\'s entries.',
+      });
     }
   }, []);
 
@@ -63,11 +72,23 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.listWrapper}>
-        <EntryList 
-          entries={entries} 
-          onRefresh={onRefresh} 
-          refreshing={refreshing} 
-        />
+        {error ? (
+          <View style={styles.errorContainer}>
+            <ThemedText style={styles.errorText}>{error}</ThemedText>
+            <PressScale
+              style={[styles.retryButton, { backgroundColor: themeColors.primary }]}
+              onPress={fetchEntries}
+            >
+              <ThemedText style={styles.retryText}>Retry</ThemedText>
+            </PressScale>
+          </View>
+        ) : (
+          <EntryList 
+            entries={entries} 
+            onRefresh={onRefresh} 
+            refreshing={refreshing} 
+          />
+        )}
       </View>
 
       <PressScale
@@ -102,6 +123,26 @@ const styles = StyleSheet.create({
   },
   listWrapper: {
     flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#EF4444',
+    marginBottom: 16,
+  },
+  retryButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   fab: {
     position: 'absolute',
