@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 24,
-    paddingVertical: 2,
+    paddingVertical: 8,
     marginRight: 16,
   },
   details: {
