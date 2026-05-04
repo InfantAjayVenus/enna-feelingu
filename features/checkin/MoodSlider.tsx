@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-const MOOD_EMOJIS: Record<number, string> = {
+export const MOOD_EMOJIS: Record<number, string> = {
   1: '😫',
   2: '😭',
   3: '😔',
