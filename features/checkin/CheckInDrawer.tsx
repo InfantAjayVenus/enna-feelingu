@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Modal, StyleSheet, View, SafeAreaView, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -31,9 +31,18 @@ export function CheckInDrawer({ visible, onClose, children }: CheckInDrawerProps
               <MaterialIcons name="close" size={24} color={themeColors.text} />
             </TouchableOpacity>
           </View>
-          <View style={styles.content}>
-            {children}
-          </View>
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboardAvoidingView}
+          >
+            <ScrollView 
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+            >
+              {children}
+            </ScrollView>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </ThemedView>
     </Modal>
@@ -59,7 +68,13 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 4,
   },
-  content: {
+  keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 });
