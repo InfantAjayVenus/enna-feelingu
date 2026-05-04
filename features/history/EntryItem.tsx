@@ -18,6 +18,13 @@ export function EntryItem({ entry }: EntryItemProps) {
   const date = new Date(entry.timestamp);
   const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+  // Use the semantic color from the palette based on mood score
+  const getMoodIndicatorColor = () => {
+    if (entry.mood <= 4) return themeColors.moodNegative;
+    if (entry.mood === 5) return themeColors.moodNeutral;
+    return themeColors.moodPositive;
+  };
+
   return (
     <ThemedView style={[styles.container, { borderBottomColor: themeColors.border }]}>
       <View style={styles.content}>
@@ -31,15 +38,9 @@ export function EntryItem({ entry }: EntryItemProps) {
           ) : null}
         </View>
       </View>
-      <View style={[styles.moodIndicator, { backgroundColor: getMoodColor(entry.mood, themeColors) }]} />
+      <View style={[styles.moodIndicator, { backgroundColor: getMoodIndicatorColor() }]} />
     </ThemedView>
   );
-}
-
-function getMoodColor(mood: number, themeColors: any) {
-  if (mood <= 4) return themeColors.moodNegative;
-  if (mood === 5) return themeColors.moodNeutral;
-  return themeColors.moodPositive;
 }
 
 const styles = StyleSheet.create({
