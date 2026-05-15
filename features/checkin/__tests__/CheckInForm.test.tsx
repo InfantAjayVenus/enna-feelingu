@@ -44,7 +44,8 @@ describe('CheckInForm Integration', () => {
   });
 
   it('completes the full check-in flow', async () => {
-    const { getByTestId } = render(<CheckInForm />);
+    const onSuccess = jest.fn();
+    const { getByTestId } = render(<CheckInForm onSuccess={onSuccess} />);
 
     // 1. Select mood
     const slider = getByTestId('mood-slider');
@@ -76,8 +77,9 @@ describe('CheckInForm Integration', () => {
       text2: 'Check-in saved successfully!',
     });
 
-    // 6. Verify navigation
-    expect(router.push).toHaveBeenCalledWith('/success');
+    // 6. Verify onSuccess called
+    expect(onSuccess).toHaveBeenCalled();
+    expect(router.push).not.toHaveBeenCalled();
   });
 
   it('shows submitting state during save', async () => {
@@ -88,7 +90,8 @@ describe('CheckInForm Integration', () => {
     });
     (saveEntry as jest.Mock).mockReturnValue(savePromise);
 
-    const { getByTestId, getByText } = render(<CheckInForm />);
+    const onSuccess = jest.fn();
+    const { getByTestId, getByText } = render(<CheckInForm onSuccess={onSuccess} />);
 
     fireEvent(getByTestId('mood-slider'), 'onValueChange', 5);
 
@@ -104,7 +107,7 @@ describe('CheckInForm Integration', () => {
     });
 
     await waitFor(() => {
-      expect(router.push).toHaveBeenCalledWith('/success');
+      expect(onSuccess).toHaveBeenCalled();
     });
   });
 

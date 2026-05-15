@@ -10,7 +10,11 @@ import { PressScale } from '@/components/motion/press-scale';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export function CheckInForm() {
+interface CheckInFormProps {
+  onSuccess?: () => void;
+}
+
+export function CheckInForm({ onSuccess }: CheckInFormProps) {
   const { mood, setMood, activity, setActivity, submit, isSubmitting, isValid } = useCheckinForm();
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
@@ -24,7 +28,7 @@ export function CheckInForm() {
           text1: 'Success',
           text2: 'Check-in saved successfully!',
         });
-        router.push('/success' as any);
+        onSuccess?.();
       }
     } catch (error) {
       Toast.show({
