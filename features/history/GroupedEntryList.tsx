@@ -85,8 +85,11 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
         return acc;
       }, {} as Record<string, CheckInEntry[]>);
 
-      return Object.keys(groups).map((dateStr) => {
-        const groupData = groups[dateStr];
+      return Object.entries(groups)
+        .sort(([, aData], [, bData]) => {
+          return new Date(bData[0].timestamp).getTime() - new Date(aData[0].timestamp).getTime();
+        })
+        .map(([dateStr, groupData]) => {
         const sum = groupData.reduce((acc, curr) => acc + curr.mood, 0);
         const avg = Math.round(sum / groupData.length);
         return {
