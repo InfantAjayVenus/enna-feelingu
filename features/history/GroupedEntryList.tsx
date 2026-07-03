@@ -61,9 +61,9 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
         const d = new Date(entry.timestamp);
         const now = new Date();
 
-        const dateMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const diffTime = nowMidnight.getTime() - dateMidnight.getTime();
+        const dateMidnight = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+        const nowMidnight = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        const diffTime = nowMidnight - dateMidnight;
         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         let dateStr = '';
