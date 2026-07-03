@@ -1,23 +1,10 @@
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { Colors, MOOD_EMOJIS } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-
-export const MOOD_EMOJIS: Record<number, string> = {
-  1: '😫',
-  2: '😭',
-  3: '😔',
-  4: '😕',
-  5: '😐',
-  6: '🙂',
-  7: '😊',
-  8: '😁',
-  9: '🤩',
-  10: '🥳',
-};
 
 export type MoodSliderProps = {
   value: number | null;

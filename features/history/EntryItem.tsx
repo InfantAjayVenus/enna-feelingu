@@ -3,8 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CheckInEntry } from '@/store';
-import { MOOD_EMOJIS } from '@/features/checkin/MoodSlider';
-import { Colors } from '@/constants/theme';
+import { Colors, MOOD_EMOJIS } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface EntryItemProps {

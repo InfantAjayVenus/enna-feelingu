@@ -129,3 +129,16 @@ export function getMoodBg(score: number) {
   if (score === 5) return 'bg-gray-100 dark:bg-gray-800';
   return 'bg-green-100 dark:bg-green-900';
 }
+
+export const MOOD_EMOJIS: Record<number, string> = {
+  1: '😫',
+  2: '😭',
+  3: '😔',
+  4: '😕',
+  5: '😐',
+  6: '🙂',
+  7: '😊',
+  8: '😁',
+  9: '🤩',
+  10: '🥳',
+};

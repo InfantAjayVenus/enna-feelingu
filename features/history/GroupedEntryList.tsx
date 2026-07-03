@@ -11,9 +11,8 @@ import { ThemedView } from '@/components/themed-view';
 import { PressScale } from '@/components/motion/press-scale';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CheckInEntry } from '@/store';
-import { MOOD_EMOJIS } from '@/features/checkin/MoodSlider';
 import { EntryItem } from './EntryItem';
-import { Colors } from '@/constants/theme';
+import { Colors, MOOD_EMOJIS } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 // ---------------------------------------------------------------------------
