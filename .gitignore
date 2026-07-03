@@ -41,3 +41,10 @@ app-example
 # generated native folders
 /ios
 /android
+.idea/.gitignore
+.idea/enna-feelingu.iml
+.idea/markdown.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/caches/deviceStreaming.xml

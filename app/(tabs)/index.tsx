@@ -1,98 +1,162 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { PressScale } from '@/components/motion/press-scale';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Colors } from '@/constants/theme';
+import { CheckInDrawer } from '@/features/checkin/CheckInDrawer';
+import { CheckInForm } from '@/features/checkin/CheckInForm';
+import { EntryList } from '@/features/history/EntryList';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { CheckInEntry, getEntries } from '@/store';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [entries, setEntries] = useState<CheckInEntry[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const colorScheme = useColorScheme() ?? 'light';
+  const themeColors = Colors[colorScheme];
+  const { top } = useSafeAreaInsets();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const fetchEntries = useCallback(async () => {
+    try {
+      setError(null);
+      const allEntries = await getEntries();
+      
+      // Filter for today's entries (local day)
+      const now = new Date();
+      const todayStr = now.toLocaleDateString();
+      
+      const todayEntries = allEntries.filter(entry => {
+        const entryDate = new Date(entry.timestamp);
+        return entryDate.toLocaleDateString() === todayStr;
+      });
+      
+      setEntries(todayEntries);
+    } catch (err) {
+      console.error('Failed to fetch entries:', err);
+      setError('Failed to load entries');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Could not load today\'s entries.',
+      });
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchEntries();
+    }, [fetchEntries])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchEntries();
+    setRefreshing(false);
+  };
+
+  const handleCheckInSuccess = () => {
+    setIsDrawerVisible(false);
+    fetchEntries();
+  };
+
+  return (
+    <ThemedView style={[styles.container, { paddingTop: top + 12 }]}>
+      <View style={styles.header}>
+        <ThemedText type="title">Your Day</ThemedText>
+        <ThemedText style={styles.subtitle}>Today&apos;s check-ins</ThemedText>
+      </View>
+
+      <View style={styles.listWrapper}>
+        {error ? (
+          <View style={styles.errorContainer}>
+            <ThemedText style={[styles.errorText, { color: themeColors.error }]}>{error}</ThemedText>
+            <PressScale
+              style={[styles.retryButton, { backgroundColor: themeColors.primary }]}
+              onPress={fetchEntries}
+            >
+              <ThemedText style={styles.retryText}>Retry</ThemedText>
+            </PressScale>
+          </View>
+        ) : (
+          <EntryList 
+            entries={entries} 
+            onRefresh={onRefresh} 
+            refreshing={refreshing} 
+          />
+        )}
+      </View>
+
+      <PressScale
+        style={[styles.fab, { backgroundColor: themeColors.primary }]}
+        onPress={() => setIsDrawerVisible(true)}
+      >
+        <MaterialIcons name="add" size={32} color="#FFFFFF" />
+      </PressScale>
+
+      <CheckInDrawer 
+        visible={isDrawerVisible} 
+        onClose={() => setIsDrawerVisible(false)}
+      >
+        <CheckInForm onSuccess={handleCheckInSuccess} />
+      </CheckInDrawer>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  subtitle: {
+    opacity: 0.7,
+    marginTop: 4,
+  },
+  listWrapper: {
+    flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+    padding: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  errorText: {
+    fontSize: 16,
+    marginBottom: 16,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  retryButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  fab: {
     position: 'absolute',
+    right: 20,
+    bottom: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "source_docs": [
+    "docs/design-assets/DESIGN.md",
+    "docs/design-assets/DESIGN-TOKENS.md"
+  ],
+  "generated_from": "design-system-setup-checklist",
+  "items": [
+    {
+      "id": "nativewind-tailwind-setup",
+      "title": "NativeWind and Tailwind setup",
+      "status": "completed",
+      "tasks": [
+        "Add tailwind.config.js",
+        "Add the nativewind preset",
+        "Set darkMode to class",
+        "Extend theme tokens",
+        "Add global.css",
+        "Import the global stylesheet"
+      ]
+    },
+    {
+      "id": "babel-metro-setup",
+      "title": "Babel and Metro setup",
+      "status": "completed",
+      "tasks": [
+        "Add babel.config.js if missing",
+        "Keep babel-preset-expo",
+        "Add NativeWind Babel transform",
+        "Add metro.config.js",
+        "Wrap Metro with NativeWind",
+        "Clear the Metro cache after config changes"
+      ]
+    },
+    {
+      "id": "theme-token-layer",
+      "title": "Theme and token layer",
+      "status": "completed",
+      "tasks": [
+        "Replace starter Colors and Fonts primitives",
+        "Add semantic tokens",
+        "Add component tokens",
+        "Add mood helper functions",
+        "Align with light and dark palette"
+      ]
+    },
+    {
+      "id": "theme-sync-app-shell",
+      "title": "Theme sync and app shell",
+      "status": "completed",
+      "tasks": [
+        "Keep or replace the root theme bridge",
+        "Respect system light and dark mode",
+        "Align the status bar",
+        "Verify navigation surface colors"
+      ]
+    },
+    {
+      "id": "typography",
+      "title": "Typography",
+      "status": "completed",
+      "tasks": [
+        "Load Inter as the primary font",
+        "Keep system fallback fonts",
+        "Apply the documented type scale"
+      ]
+    },
+    {
+      "id": "icons-status",
+      "title": "Icons and status symbols",
+      "status": "completed",
+      "tasks": [
+        "Standardize on Material Icons",
+        "Keep or extend Expo Symbols fallback",
+        "Update icon mappings for screens and states"
+      ]
+    },
+    {
+      "id": "motion-feedback",
+      "title": "Motion and feedback",
+      "status": "completed",
+      "tasks": [
+        "Preserve reanimated",
+        "Preserve gesture-handler",
+        "Use expo-haptics",
+        "Add react-native-svg for charts if needed",
+        "Apply motion rules from the design docs"
+      ]
+    },
+    {
+      "id": "asset-layout-alignment",
+      "title": "Asset and layout alignment",
+      "status": "completed",
+      "tasks": [
+        "Update splash and adaptive icon colors",
+        "Use native emojis and Material icons for v1",
+        "Apply spacing and sizing rules",
+        "Verify mockup parity across screens"
+      ]
+    },
+    {
+      "id": "accessibility",
+      "title": "Accessibility checks",
+      "status": "completed",
+      "tasks": [
+        "Keep touch targets at or above 48dp",
+        "Maintain WCAG AA contrast",
+        "Avoid emoji-only meaning",
+        "Keep haptic feedback on key selections"
+      ]
+    }
+  ]
+}
