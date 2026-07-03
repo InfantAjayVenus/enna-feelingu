@@ -1,12 +1,14 @@
 import { PressScale } from '@/components/motion/press-scale';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
-import { GroupedEntryList } from '@/features/history/GroupedEntryList';
+import { GroupedEntryList, GroupedEntryListHandle } from '@/features/history/GroupedEntryList';
+import { HistoryMenu, type MenuAction } from '@/features/history/HistoryMenu';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CheckInEntry, getEntries } from '@/store';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -14,8 +16,12 @@ export default function HistoryScreen() {
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
+
+  const listRef = useRef<GroupedEntryListHandle>(null);
+  const menuButtonRef = useRef<View>(null);
 
   const fetchEntries = useCallback(async () => {
     try {
@@ -46,11 +52,43 @@ export default function HistoryScreen() {
     setRefreshing(false);
   };
 
+  const menuActions: MenuAction[] = [
+    {
+      id: 'collapse-all',
+      label: 'Collapse all',
+      iconName: 'arrow.up.to.line',
+      onPress: () => listRef.current?.collapseAll(),
+    },
+    {
+      id: 'expand-all',
+      label: 'Expand all',
+      iconName: 'arrow.down.to.line',
+      onPress: () => listRef.current?.expandAll(),
+    },
+  ];
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
-        <ThemedText type="title">History</ThemedText>
-        <ThemedText style={styles.subtitle}>All your check-ins</ThemedText>
+        <View style={styles.headerLeft}>
+          <ThemedText type="title">History</ThemedText>
+          <ThemedText style={styles.subtitle}>All your check-ins</ThemedText>
+        </View>
+        <View ref={menuButtonRef}>
+          <PressScale
+            id="history-menu-button"
+            onPress={() => setMenuVisible(true)}
+            accessibilityRole="button"
+            accessibilityLabel="View options"
+            style={styles.menuButton}
+          >
+            <IconSymbol
+              name="ellipsis"
+              size={20}
+              color={themeColors.text}
+            />
+          </PressScale>
+        </View>
       </View>
 
       <View style={styles.listWrapper}>
@@ -65,13 +103,21 @@ export default function HistoryScreen() {
             </PressScale>
           </View>
         ) : (
-          <GroupedEntryList 
-            entries={entries} 
-            onRefresh={onRefresh} 
-            refreshing={refreshing} 
+          <GroupedEntryList
+            ref={listRef}
+            entries={entries}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
           />
         )}
       </View>
+
+      <HistoryMenu
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        actions={menuActions}
+        anchorRef={menuButtonRef}
+      />
     </ThemedView>
   );
 }
@@ -84,9 +130,22 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flex: 1,
   },
   subtitle: {
     opacity: 0.7,
+    marginTop: 4,
+  },
+  menuButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 4,
   },
   listWrapper: {

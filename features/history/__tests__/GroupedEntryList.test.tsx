@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { act, createRef } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { GroupedEntryList } from '../GroupedEntryList';
+import { GroupedEntryList, GroupedEntryListHandle } from '../GroupedEntryList';
 import { CheckInEntry } from '@/store';
 
 describe('GroupedEntryList', () => {
@@ -96,5 +96,31 @@ describe('GroupedEntryList', () => {
 
     const todayHeader = getByLabelText('Today, expanded');
     expect(todayHeader).toBeTruthy();
+  });
+
+  it('collapseAll hides all entries via imperative handle', () => {
+    const ref = createRef<GroupedEntryListHandle>();
+    const { queryByText } = render(<GroupedEntryList ref={ref} entries={mockEntries} />);
+
+    // All entries visible initially
+    expect(queryByText('Working')).toBeTruthy();
+    expect(queryByText('Coffee break')).toBeTruthy();
+
+    act(() => { ref.current?.collapseAll(); });
+
+    expect(queryByText('Working')).toBeNull();
+    expect(queryByText('Coffee break')).toBeNull();
+  });
+
+  it('expandAll restores all entries after collapseAll', () => {
+    const ref = createRef<GroupedEntryListHandle>();
+    const { queryByText } = render(<GroupedEntryList ref={ref} entries={mockEntries} />);
+
+    act(() => { ref.current?.collapseAll(); });
+    expect(queryByText('Working')).toBeNull();
+
+    act(() => { ref.current?.expandAll(); });
+    expect(queryByText('Working')).toBeTruthy();
+    expect(queryByText('Coffee break')).toBeTruthy();
   });
 });

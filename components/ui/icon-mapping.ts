@@ -13,6 +13,8 @@ export const ICON_SYMBOL_MAP = {
   'ellipsis': 'more-horiz',
   'trash': 'delete',
   'clock.fill': 'history',
+  'arrow.up.to.line': 'vertical-align-top',
+  'arrow.down.to.line': 'vertical-align-bottom',
 } as const satisfies Record<string, MaterialIconName>;
 
 export type IconSymbolName = keyof typeof ICON_SYMBOL_MAP;

@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import { SectionList, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -8,6 +14,14 @@ import { CheckInEntry } from '@/store';
 import { EntryItem } from './EntryItem';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
+// ---------------------------------------------------------------------------
+// Public handle — lets the parent screen drive collapse/expand globally.
+// ---------------------------------------------------------------------------
+export interface GroupedEntryListHandle {
+  collapseAll: () => void;
+  expandAll: () => void;
+}
 
 interface GroupedEntryListProps {
   entries: CheckInEntry[];
@@ -20,125 +34,135 @@ interface Section {
   data: CheckInEntry[];
 }
 
-export function GroupedEntryList({ entries, onRefresh, refreshing }: GroupedEntryListProps) {
-  const colorScheme = useColorScheme() ?? 'light';
-  const themeColors = Colors[colorScheme];
+export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryListProps>(
+  function GroupedEntryList({ entries, onRefresh, refreshing }, ref) {
+    const colorScheme = useColorScheme() ?? 'light';
+    const themeColors = Colors[colorScheme];
 
-  // Track which sections are collapsed; all sections start expanded.
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+    // Track which sections are collapsed; all sections start expanded.
+    const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
-  const toggleSection = useCallback((title: string) => {
-    setCollapsedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(title)) {
-        next.delete(title);
-      } else {
-        next.add(title);
-      }
-      return next;
-    });
-  }, []);
+    const toggleSection = useCallback((title: string) => {
+      setCollapsedSections((prev) => {
+        const next = new Set(prev);
+        if (next.has(title)) {
+          next.delete(title);
+        } else {
+          next.add(title);
+        }
+        return next;
+      });
+    }, []);
 
-  const rawSections = useMemo<Section[]>(() => {
-    const groups = entries.reduce((acc, entry) => {
-      const d = new Date(entry.timestamp);
-      const now = new Date();
+    const rawSections = useMemo<Section[]>(() => {
+      const groups = entries.reduce((acc, entry) => {
+        const d = new Date(entry.timestamp);
+        const now = new Date();
 
-      const dateMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const diffTime = nowMidnight.getTime() - dateMidnight.getTime();
-      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        const dateMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const diffTime = nowMidnight.getTime() - dateMidnight.getTime();
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-      let dateStr = '';
-      if (diffDays === 0) {
-        dateStr = 'Today';
-      } else if (diffDays === 1) {
-        dateStr = 'Yesterday';
-      } else if (diffDays > 1 && diffDays < 7) {
-        dateStr = `${diffDays} days ago`;
-      } else {
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        dateStr = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-      }
-      if (!acc[dateStr]) {
-        acc[dateStr] = [];
-      }
-      acc[dateStr].push(entry);
-      return acc;
-    }, {} as Record<string, CheckInEntry[]>);
+        let dateStr = '';
+        if (diffDays === 0) {
+          dateStr = 'Today';
+        } else if (diffDays === 1) {
+          dateStr = 'Yesterday';
+        } else if (diffDays > 1 && diffDays < 7) {
+          dateStr = `${diffDays} days ago`;
+        } else {
+          const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+          dateStr = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+        }
+        if (!acc[dateStr]) {
+          acc[dateStr] = [];
+        }
+        acc[dateStr].push(entry);
+        return acc;
+      }, {} as Record<string, CheckInEntry[]>);
 
-    return Object.keys(groups).map((dateStr) => ({
-      title: dateStr,
-      data: groups[dateStr],
-    }));
-  }, [entries]);
+      return Object.keys(groups).map((dateStr) => ({
+        title: dateStr,
+        data: groups[dateStr],
+      }));
+    }, [entries]);
 
-  // Collapse by passing an empty data array for collapsed sections.
-  // SectionList still renders the header while items are hidden.
-  const sections = useMemo<Section[]>(
-    () =>
-      rawSections.map((section) => ({
-        title: section.title,
-        data: collapsedSections.has(section.title) ? [] : section.data,
-      })),
-    [rawSections, collapsedSections],
-  );
+    // Expose imperative actions to the parent screen.
+    useImperativeHandle(ref, () => ({
+      collapseAll: () =>
+        setCollapsedSections(new Set(rawSections.map((s) => s.title))),
+      expandAll: () =>
+        setCollapsedSections(new Set()),
+    }), [rawSections]);
 
-  const renderEmpty = () => (
-    <ThemedView style={styles.emptyContainer}>
-      <ThemedText style={styles.emptyText}>No check-ins yet. Start your day!</ThemedText>
-    </ThemedView>
-  );
+    // Collapse by passing an empty data array for collapsed sections.
+    // SectionList still renders the header while items are hidden.
+    const sections = useMemo<Section[]>(
+      () =>
+        rawSections.map((section) => ({
+          title: section.title,
+          data: collapsedSections.has(section.title) ? [] : section.data,
+        })),
+      [rawSections, collapsedSections],
+    );
 
-  return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <EntryItem entry={item} />}
-      renderSectionHeader={({ section: { title } }) => {
-        const isCollapsed = collapsedSections.has(title);
-        return (
-          <PressScale
-            onPress={() => toggleSection(title)}
-            accessibilityRole="button"
-            accessibilityLabel={`${title}, ${isCollapsed ? 'collapsed' : 'expanded'}`}
-            accessibilityState={{ expanded: !isCollapsed }}
-          >
-            <ThemedView
-              style={[
-                styles.sectionHeader,
-                {
-                  backgroundColor: themeColors.surface,
-                  borderBottomColor: isCollapsed ? 'transparent' : themeColors.border,
-                },
-              ]}
+    const renderEmpty = () => (
+      <ThemedView style={styles.emptyContainer}>
+        <ThemedText style={styles.emptyText}>No check-ins yet. Start your day!</ThemedText>
+      </ThemedView>
+    );
+
+    return (
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <EntryItem entry={item} />}
+        renderSectionHeader={({ section: { title } }) => {
+          const isCollapsed = collapsedSections.has(title);
+          return (
+            <PressScale
+              onPress={() => toggleSection(title)}
+              accessibilityRole="button"
+              accessibilityLabel={`${title}, ${isCollapsed ? 'collapsed' : 'expanded'}`}
+              accessibilityState={{ expanded: !isCollapsed }}
             >
-              <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
-                {title}
-              </ThemedText>
-              <IconSymbol
-                name="chevron.right"
-                size={14}
-                weight="medium"
-                color={themeColors.primary}
+              <ThemedView
                 style={[
-                  styles.chevron,
-                  { transform: [{ rotate: isCollapsed ? '0deg' : '90deg' }] },
+                  styles.sectionHeader,
+                  {
+                    backgroundColor: themeColors.surface,
+                    borderBottomColor: isCollapsed ? 'transparent' : themeColors.border,
+                  },
                 ]}
-              />
-            </ThemedView>
-          </PressScale>
-        );
-      }}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      ListEmptyComponent={renderEmpty}
-      contentContainerStyle={styles.listContent}
-      stickySectionHeadersEnabled={true}
-    />
-  );
-}
+              >
+                <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
+                  {title}
+                </ThemedText>
+                <IconSymbol
+                  name="chevron.right"
+                  size={14}
+                  weight="medium"
+                  color={themeColors.primary}
+                  style={[
+                    styles.chevron,
+                    { transform: [{ rotate: isCollapsed ? '0deg' : '90deg' }] },
+                  ]}
+                />
+              </ThemedView>
+            </PressScale>
+          );
+        }}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        ListEmptyComponent={renderEmpty}
+        contentContainerStyle={styles.listContent}
+        stickySectionHeadersEnabled={true}
+      />
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   emptyContainer: {
