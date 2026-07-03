@@ -3,6 +3,16 @@ import { CheckInEntry } from './types';
 
 const DB_NAME = 'checkins.db';
 
+interface RawCheckInRow {
+  id: string;
+  timestamp: string;
+  mood: number;
+  activity: string;
+  skipped: number;
+  autoSkipped: number;
+  overriddenByEntryId: string | null;
+}
+
 let db: SQLite.SQLiteDatabase | null = null;
 
 async function getDb() {
@@ -53,7 +63,7 @@ export async function saveEntry(entry: CheckInEntry): Promise<void> {
 
 export async function getEntries(): Promise<CheckInEntry[]> {
   const database = await getDb();
-  const rows = await database.getAllAsync<any>('SELECT * FROM check_in_entries ORDER BY timestamp DESC');
+  const rows = await database.getAllAsync<RawCheckInRow>('SELECT * FROM check_in_entries ORDER BY timestamp DESC');
 
   return rows.map(row => ({
     ...row,
