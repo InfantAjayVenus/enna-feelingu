@@ -12,6 +12,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
@@ -20,6 +21,7 @@ export default function HomeScreen() {
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
+  const { top } = useSafeAreaInsets();
 
   const fetchEntries = useCallback(async () => {
     try {
@@ -65,7 +67,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: top + 12 }]}>
       <View style={styles.header}>
         <ThemedText type="title">Your Day</ThemedText>
         <ThemedText style={styles.subtitle}>Today&apos;s check-ins</ThemedText>
@@ -111,7 +113,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
   },
   header: {
     paddingHorizontal: 20,
