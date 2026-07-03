@@ -5,12 +5,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { SectionList, StyleSheet } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { PressScale } from '@/components/motion/press-scale';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CheckInEntry } from '@/store';
+import { MOOD_EMOJIS } from '@/features/checkin/MoodSlider';
 import { EntryItem } from './EntryItem';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -32,6 +33,7 @@ interface GroupedEntryListProps {
 interface Section {
   title: string;
   data: CheckInEntry[];
+  averageMood: number;
 }
 
 export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryListProps>(
@@ -83,10 +85,16 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
         return acc;
       }, {} as Record<string, CheckInEntry[]>);
 
-      return Object.keys(groups).map((dateStr) => ({
-        title: dateStr,
-        data: groups[dateStr],
-      }));
+      return Object.keys(groups).map((dateStr) => {
+        const groupData = groups[dateStr];
+        const sum = groupData.reduce((acc, curr) => acc + curr.mood, 0);
+        const avg = Math.round(sum / groupData.length);
+        return {
+          title: dateStr,
+          data: groupData,
+          averageMood: avg,
+        };
+      });
     }, [entries]);
 
     // Expose imperative actions to the parent screen.
@@ -104,6 +112,7 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
         rawSections.map((section) => ({
           title: section.title,
           data: collapsedSections.has(section.title) ? [] : section.data,
+          averageMood: section.averageMood,
         })),
       [rawSections, collapsedSections],
     );
@@ -119,7 +128,8 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
         sections={sections}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <EntryItem entry={item} />}
-        renderSectionHeader={({ section: { title } }) => {
+        renderSectionHeader={({ section }) => {
+          const { title, averageMood } = section;
           const isCollapsed = collapsedSections.has(title);
           return (
             <PressScale
@@ -137,9 +147,12 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
                   },
                 ]}
               >
-                <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
-                  {title}
-                </ThemedText>
+                <View style={styles.headerTitleContainer}>
+                  <ThemedText style={styles.headerEmoji}>{MOOD_EMOJIS[averageMood]}</ThemedText>
+                  <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
+                    {title}
+                  </ThemedText>
+                </View>
                 <IconSymbol
                   name="chevron.right"
                   size={14}
@@ -186,6 +199,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerEmoji: {
+    fontSize: 16,
+    marginRight: 8,
   },
   chevron: {
     marginLeft: 4,

@@ -21,6 +21,15 @@ describe('GroupedEntryList', () => {
       overriddenByEntryId: null,
     },
     {
+      id: '1.5',
+      timestamp: now.toISOString(),
+      mood: 3,
+      activity: 'Tired',
+      skipped: false,
+      autoSkipped: false,
+      overriddenByEntryId: null,
+    },
+    {
       id: '2',
       timestamp: yesterday.toISOString(),
       mood: 8,
@@ -41,12 +50,21 @@ describe('GroupedEntryList', () => {
   ];
 
   it('renders correctly with entries and groups by date', () => {
-    const { getByText } = render(<GroupedEntryList entries={mockEntries} />);
+    const { getByText, getAllByText } = render(<GroupedEntryList entries={mockEntries} />);
 
     // Check for activities
     expect(getByText('Working')).toBeTruthy();
+    expect(getByText('Tired')).toBeTruthy();
     expect(getByText('Coffee break')).toBeTruthy();
     expect(getByText('Reading')).toBeTruthy();
+
+    // Check for average mood emojis in headers
+    // Today: average of 7 and 3 is 5 (😐)
+    // Yesterday: average of 8 is 8 (😁)
+    // '😁' appears in Yesterday header and in the Yesterday entry itself (2 total).
+    expect(getAllByText('😁').length).toBe(2);
+    // '😐' appears in Today header, Older Date header, and Older Date entry itself (3 total).
+    expect(getAllByText('😐').length).toBe(3);
 
     // Check for relative group headers
     expect(getByText('Today')).toBeTruthy();
