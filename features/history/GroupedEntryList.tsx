@@ -20,9 +20,25 @@ export function GroupedEntryList({ entries, onRefresh, refreshing }: GroupedEntr
   const sections = useMemo(() => {
     const groups = entries.reduce((acc, entry) => {
       const d = new Date(entry.timestamp);
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      const dateStr = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+      const now = new Date();
+      
+      const dateMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffTime = nowMidnight.getTime() - dateMidnight.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+      let dateStr = '';
+      if (diffDays === 0) {
+        dateStr = 'Today';
+      } else if (diffDays === 1) {
+        dateStr = 'Yesterday';
+      } else if (diffDays > 1 && diffDays < 7) {
+        dateStr = `${diffDays} days ago`;
+      } else {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        dateStr = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+      }
       if (!acc[dateStr]) {
         acc[dateStr] = [];
       }
