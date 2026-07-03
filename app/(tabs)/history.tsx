@@ -2,7 +2,7 @@ import { PressScale } from '@/components/motion/press-scale';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { EntryList } from '@/features/history/EntryList';
+import { GroupedEntryList } from '@/features/history/GroupedEntryList';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CheckInEntry, getEntries } from '@/store';
 import { useFocusEffect } from 'expo-router';
@@ -65,7 +65,7 @@ export default function HistoryScreen() {
             </PressScale>
           </View>
         ) : (
-          <EntryList 
+          <GroupedEntryList 
             entries={entries} 
             onRefresh={onRefresh} 
             refreshing={refreshing} 
