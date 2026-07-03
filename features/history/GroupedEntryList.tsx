@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { SectionList, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PressScale } from '@/components/motion/press-scale';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CheckInEntry } from '@/store';
 import { EntryItem } from './EntryItem';
 import { Colors } from '@/constants/theme';
@@ -13,15 +15,35 @@ interface GroupedEntryListProps {
   refreshing?: boolean;
 }
 
+interface Section {
+  title: string;
+  data: CheckInEntry[];
+}
+
 export function GroupedEntryList({ entries, onRefresh, refreshing }: GroupedEntryListProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
 
-  const sections = useMemo(() => {
+  // Track which sections are collapsed; all sections start expanded.
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+
+  const toggleSection = useCallback((title: string) => {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(title)) {
+        next.delete(title);
+      } else {
+        next.add(title);
+      }
+      return next;
+    });
+  }, []);
+
+  const rawSections = useMemo<Section[]>(() => {
     const groups = entries.reduce((acc, entry) => {
       const d = new Date(entry.timestamp);
       const now = new Date();
-      
+
       const dateMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
       const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diffTime = nowMidnight.getTime() - dateMidnight.getTime();
@@ -46,16 +68,27 @@ export function GroupedEntryList({ entries, onRefresh, refreshing }: GroupedEntr
       return acc;
     }, {} as Record<string, CheckInEntry[]>);
 
-    return Object.keys(groups).map(dateStr => ({
+    return Object.keys(groups).map((dateStr) => ({
       title: dateStr,
-      data: groups[dateStr]
+      data: groups[dateStr],
     }));
   }, [entries]);
 
+  // Collapse by passing an empty data array for collapsed sections.
+  // SectionList still renders the header while items are hidden.
+  const sections = useMemo<Section[]>(
+    () =>
+      rawSections.map((section) => ({
+        title: section.title,
+        data: collapsedSections.has(section.title) ? [] : section.data,
+      })),
+    [rawSections, collapsedSections],
+  );
+
   const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
+    <ThemedView style={styles.emptyContainer}>
       <ThemedText style={styles.emptyText}>No check-ins yet. Start your day!</ThemedText>
-    </View>
+    </ThemedView>
   );
 
   return (
@@ -63,16 +96,41 @@ export function GroupedEntryList({ entries, onRefresh, refreshing }: GroupedEntr
       sections={sections}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <EntryItem entry={item} />}
-      renderSectionHeader={({ section: { title } }) => (
-        <ThemedView style={[styles.sectionHeader, { 
-          backgroundColor: themeColors.surface,
-          borderBottomColor: themeColors.border
-        }]}>
-          <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
-            {title}
-          </ThemedText>
-        </ThemedView>
-      )}
+      renderSectionHeader={({ section: { title } }) => {
+        const isCollapsed = collapsedSections.has(title);
+        return (
+          <PressScale
+            onPress={() => toggleSection(title)}
+            accessibilityRole="button"
+            accessibilityLabel={`${title}, ${isCollapsed ? 'collapsed' : 'expanded'}`}
+            accessibilityState={{ expanded: !isCollapsed }}
+          >
+            <ThemedView
+              style={[
+                styles.sectionHeader,
+                {
+                  backgroundColor: themeColors.surface,
+                  borderBottomColor: isCollapsed ? 'transparent' : themeColors.border,
+                },
+              ]}
+            >
+              <ThemedText type="defaultSemiBold" style={{ color: themeColors.primary }}>
+                {title}
+              </ThemedText>
+              <IconSymbol
+                name="chevron.right"
+                size={14}
+                weight="medium"
+                color={themeColors.primary}
+                style={[
+                  styles.chevron,
+                  { transform: [{ rotate: isCollapsed ? '0deg' : '90deg' }] },
+                ]}
+              />
+            </ThemedView>
+          </PressScale>
+        );
+      }}
       onRefresh={onRefresh}
       refreshing={refreshing}
       ListEmptyComponent={renderEmpty}
@@ -101,5 +159,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
-  }
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  chevron: {
+    marginLeft: 4,
+  },
 });
