@@ -76,7 +76,7 @@ export default function HomeScreen() {
       <View style={styles.listWrapper}>
         {error ? (
           <View style={styles.errorContainer}>
-            <ThemedText style={styles.errorText}>{error}</ThemedText>
+            <ThemedText style={[styles.errorText, { color: themeColors.error }]}>{error}</ThemedText>
             <PressScale
               style={[styles.retryButton, { backgroundColor: themeColors.primary }]}
               onPress={fetchEntries}
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
     marginBottom: 16,
   },
   retryButton: {
