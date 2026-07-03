@@ -50,22 +50,30 @@ export function HistoryMenu({ visible, onClose, actions, anchorRef }: HistoryMen
   // Measure the anchor button every time the menu opens.
   useEffect(() => {
     if (visible) {
-      anchorRef.current?.measure((_x, _y, width, height, pageX, pageY) => {
-        setAnchor({ x: pageX, y: pageY, width, height });
-      });
-      Animated.parallel([
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          damping: 18,
-          stiffness: 280,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacityAnim, {
-          toValue: 1,
-          duration: 120,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      const animateIn = () => {
+        Animated.parallel([
+          Animated.spring(scaleAnim, {
+            toValue: 1,
+            damping: 18,
+            stiffness: 280,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacityAnim, {
+            toValue: 1,
+            duration: 120,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      };
+
+      if (anchorRef.current) {
+        anchorRef.current.measure((_x, _y, width, height, pageX, pageY) => {
+          setAnchor({ x: pageX, y: pageY, width, height });
+          animateIn();
+        });
+      } else {
+        animateIn();
+      }
     } else {
       Animated.parallel([
         Animated.timing(scaleAnim, {
