@@ -12,6 +12,7 @@ export const ICON_SYMBOL_MAP = {
   'square.and.arrow.up': 'share',
   'ellipsis': 'more-horiz',
   'trash': 'delete',
+  'clock.fill': 'history',
 } as const satisfies Record<string, MaterialIconName>;
 
 export type IconSymbolName = keyof typeof ICON_SYMBOL_MAP;
