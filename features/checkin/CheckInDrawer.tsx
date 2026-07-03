@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, StyleSheet, View, SafeAreaView, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { Modal, StyleSheet, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
