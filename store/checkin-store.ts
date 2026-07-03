@@ -25,6 +25,11 @@ async function getDb() {
   return db;
 }
 
+// For testing purposes only
+export function _resetDbForTesting() {
+  db = null;
+}
+
 export async function saveEntry(entry: CheckInEntry): Promise<void> {
   if (entry.mood < 1 || entry.mood > 10) {
     throw new Error(`Invalid mood value: ${entry.mood}. Mood must be between 1 and 10.`);

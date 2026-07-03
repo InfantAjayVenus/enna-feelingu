@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { saveEntry, getEntries } from '../checkin-store';
+import { saveEntry, getEntries, _resetDbForTesting } from '../checkin-store';
 import { CheckInEntry } from '../types';
 
 describe('checkin-store', () => {
@@ -10,6 +10,7 @@ describe('checkin-store', () => {
   };
 
   beforeEach(() => {
+    _resetDbForTesting();
     jest.clearAllMocks();
     (SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDb);
   });
