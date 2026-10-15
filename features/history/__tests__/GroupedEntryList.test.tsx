@@ -116,6 +116,17 @@ describe('GroupedEntryList', () => {
     expect(todayHeader).toBeTruthy();
   });
 
+  it('opens the tapped entry day, regardless of which entry in the day is pressed', () => {
+    const onEntryPress = jest.fn();
+    const { getByText } = render(<GroupedEntryList entries={mockEntries} onEntryPress={onEntryPress} />);
+
+    fireEvent.press(getByText('Tired'));
+
+    const timestamp = new Date(mockEntries[1].timestamp);
+    const expectedDayKey = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}`;
+    expect(onEntryPress).toHaveBeenCalledWith(expectedDayKey);
+  });
+
   it('collapseAll hides all entries via imperative handle', () => {
     const ref = createRef<GroupedEntryListHandle>();
     const { queryByText } = render(<GroupedEntryList ref={ref} entries={mockEntries} />);

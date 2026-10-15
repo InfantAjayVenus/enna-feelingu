@@ -7,7 +7,7 @@ import { GroupedEntryList, GroupedEntryListHandle } from '@/features/history/Gro
 import { HistoryMenu, type MenuAction } from '@/features/history/HistoryMenu';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CheckInEntry, getEntries } from '@/store';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, type Href } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -108,6 +108,7 @@ export default function HistoryScreen() {
           <GroupedEntryList
             ref={listRef}
             entries={entries}
+            onEntryPress={(dayKey) => router.push(`/history/${dayKey}` as unknown as Href)}
             onRefresh={onRefresh}
             refreshing={refreshing}
           />

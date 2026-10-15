@@ -14,6 +14,7 @@ import { CheckInEntry } from '@/store';
 import { EntryItem } from './EntryItem';
 import { Colors, MOOD_EMOJIS } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getLocalDayKey } from './date-groups';
 
 // ---------------------------------------------------------------------------
 // Public handle — lets the parent screen drive collapse/expand globally.
@@ -25,6 +26,7 @@ export interface GroupedEntryListHandle {
 
 interface GroupedEntryListProps {
   entries: CheckInEntry[];
+  onEntryPress?: (dayKey: string) => void;
   onRefresh?: () => void;
   refreshing?: boolean;
 }
@@ -36,7 +38,7 @@ interface Section {
 }
 
 export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryListProps>(
-  function GroupedEntryList({ entries, onRefresh, refreshing }, ref) {
+  function GroupedEntryList({ entries, onEntryPress, onRefresh, refreshing }, ref) {
     const colorScheme = useColorScheme() ?? 'light';
     const themeColors = Colors[colorScheme];
 
@@ -129,7 +131,9 @@ export const GroupedEntryList = forwardRef<GroupedEntryListHandle, GroupedEntryL
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <EntryItem entry={item} />}
+        renderItem={({ item }) => (
+          <EntryItem entry={item} onPress={onEntryPress ? () => onEntryPress(getLocalDayKey(item.timestamp)) : undefined} />
+        )}
         renderSectionHeader={({ section }) => {
           const { title, averageMood } = section;
           const isCollapsed = collapsedSections.has(title);

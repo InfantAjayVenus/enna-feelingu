@@ -5,12 +5,14 @@ import { ThemedView } from '@/components/themed-view';
 import { CheckInEntry } from '@/store';
 import { Colors, MOOD_EMOJIS } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { PressScale } from '@/components/motion/press-scale';
 
 interface EntryItemProps {
   entry: CheckInEntry;
+  onPress?: () => void;
 }
 
-export function EntryItem({ entry }: EntryItemProps) {
+export function EntryItem({ entry, onPress }: EntryItemProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
 
@@ -24,7 +26,7 @@ export function EntryItem({ entry }: EntryItemProps) {
     return themeColors.moodPositive;
   };
 
-  return (
+  const content = (
     <ThemedView style={[styles.container, { borderBottomColor: themeColors.border }]}>
       <View style={styles.content}>
         <ThemedText style={styles.emoji}>{MOOD_EMOJIS[entry.mood]}</ThemedText>
@@ -39,6 +41,17 @@ export function EntryItem({ entry }: EntryItemProps) {
       </View>
       <View style={[styles.moodIndicator, { backgroundColor: getMoodIndicatorColor() }]} />
     </ThemedView>
+  );
+
+  if (!onPress) return content;
+  return (
+    <PressScale
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${entry.activity || 'Check-in'}, ${timeString}, mood ${entry.mood}`}
+    >
+      {content}
+    </PressScale>
   );
 }
 
