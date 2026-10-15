@@ -68,10 +68,18 @@ export function DayJournal({ dayKey }: DayJournalProps) {
                 const sentence = entry.activity.trim()
                   ? `${entry.activity.trim()}${/[.!?…]$/.test(entry.activity.trim()) ? '' : '.'}`
                   : '';
+                const moodHighlight = entry.mood <= 4
+                  ? colors.moodNegative
+                  : entry.mood === 5
+                    ? colors.accent
+                    : colors.moodPositive;
                 return (
                   <ThemedText key={entry.id}>
                     {index > 0 ? ' ' : ''}
-                    {sentence ? `${sentence} ` : ''}{MOOD_EMOJIS[entry.mood]}
+                    {sentence ? `${sentence} ` : ''}
+                    <ThemedText style={[styles.emojiHighlight, { backgroundColor: `${moodHighlight}33` }]}>
+                      {` ${MOOD_EMOJIS[entry.mood]} `}
+                    </ThemedText>
                   </ThemedText>
                 );
               })}
@@ -90,6 +98,7 @@ const styles = StyleSheet.create({
   paragraphGroup: { marginBottom: 24 },
   hourLabel: { fontSize: 13, fontWeight: '600', marginBottom: 6, textTransform: 'uppercase' },
   paragraph: { fontSize: 18, lineHeight: 30 },
+  emojiHighlight: { borderRadius: 6 },
   state: { flex: 1, minHeight: 180, justifyContent: 'center', alignItems: 'center', gap: 12 },
   message: { textAlign: 'center', opacity: 0.7 },
 });
