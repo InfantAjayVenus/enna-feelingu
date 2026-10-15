@@ -12,13 +12,13 @@ describe('HistoryMenu', () => {
     {
       id: 'action-1',
       label: 'Action 1',
-      iconName: 'chevron.up.circle',
+      iconName: 'chevron.right',
       onPress: mockAction1Press,
     },
     {
       id: 'action-2',
       label: 'Action 2',
-      iconName: 'chevron.down.circle',
+      iconName: 'ellipsis',
       onPress: mockAction2Press,
     },
   ];
