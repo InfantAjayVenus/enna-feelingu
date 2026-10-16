@@ -5,7 +5,7 @@ import { Colors } from '@/constants/theme';
 import { EntryList } from '@/features/history/EntryList';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CheckInEntry, getEntries } from '@/store';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -78,6 +78,7 @@ export default function HomeScreen() {
         ) : (
           <EntryList 
             entries={entries} 
+            onEntryPress={(dayKey) => router.push(`/history/${dayKey}` as unknown as Href)}
             onRefresh={onRefresh} 
             refreshing={refreshing} 
           />
