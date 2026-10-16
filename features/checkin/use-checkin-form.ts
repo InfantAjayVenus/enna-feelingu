@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import * as Crypto from 'expo-crypto';
 import { saveEntry } from '@/store';
 
-export function useCheckinForm() {
-  const [mood, setMood] = useState<number | null>(null);
+export function useCheckinForm(initialMood: number | null = null) {
+  const [mood, setMood] = useState<number | null>(initialMood);
   const [activity, setActivity] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);

@@ -11,10 +11,12 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface CheckInFormProps {
   onSuccess?: () => void;
+  initialMood?: number | null;
+  onCancel?: () => void;
 }
 
-export function CheckInForm({ onSuccess }: CheckInFormProps) {
-  const { mood, setMood, activity, setActivity, submit, isSubmitting, isValid } = useCheckinForm();
+export function CheckInForm({ onSuccess, initialMood = null, onCancel }: CheckInFormProps) {
+  const { mood, setMood, activity, setActivity, submit, isSubmitting, isValid } = useCheckinForm(initialMood);
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
 
@@ -69,6 +71,11 @@ export function CheckInForm({ onSuccess }: CheckInFormProps) {
           {isSubmitting ? 'Saving...' : 'Submit'}
         </ThemedText>
       </PressScale>
+      {onCancel && (
+        <PressScale onPress={onCancel} disabled={isSubmitting} style={styles.cancelButton}>
+          <ThemedText style={[styles.cancelText, { color: themeColors.textSecondary }]}>Cancel</ThemedText>
+        </PressScale>
+      )}
     </ThemedView>
   );
 }
@@ -105,5 +112,13 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+  },
+  cancelButton: {
+    marginTop: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  cancelText: {
+    fontWeight: '600',
   },
 });

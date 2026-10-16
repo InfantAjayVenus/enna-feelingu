@@ -67,6 +67,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="quick-add" options={{ headerShown: false, presentation: 'modal' }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />

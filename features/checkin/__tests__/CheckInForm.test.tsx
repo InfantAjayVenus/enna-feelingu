@@ -43,6 +43,18 @@ describe('CheckInForm Integration', () => {
     expect(submitButton.props.accessibilityState.disabled).toBe(false);
   });
 
+  it('starts with the widget mood, allows adjustment, and supports cancel', async () => {
+    const onCancel = jest.fn();
+    const { getByTestId, getByText } = render(<CheckInForm initialMood={3} onCancel={onCancel} />);
+
+    expect(getByTestId('mood-slider').props.value).toBe(3);
+    fireEvent(getByTestId('mood-slider'), 'onValueChange', 6);
+    fireEvent.press(getByText('Cancel'));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(getByTestId('mood-slider').props.value).toBe(6);
+  });
+
   it('completes the full check-in flow', async () => {
     const onSuccess = jest.fn();
     const { getByTestId } = render(<CheckInForm onSuccess={onSuccess} />);
