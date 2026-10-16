@@ -41,7 +41,8 @@
           }
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "./plugins/with-quick-add-widget"
     ],
     "experiments": {
       "typedRoutes": true,
