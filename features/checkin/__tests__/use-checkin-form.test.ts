@@ -20,13 +20,6 @@ describe('useCheckinForm', () => {
     expect(result.current.isValid).toBe(false);
   });
 
-  it('initializes with the mood selected from the quick-add widget', () => {
-    const { result } = renderHook(() => useCheckinForm(10));
-
-    expect(result.current.mood).toBe(10);
-    expect(result.current.isValid).toBe(true);
-  });
-
   it('updates mood and activity', () => {
     const { result } = renderHook(() => useCheckinForm());
 

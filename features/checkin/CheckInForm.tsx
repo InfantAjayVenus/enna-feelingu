@@ -11,12 +11,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface CheckInFormProps {
   onSuccess?: () => void;
-  initialMood?: number | null;
   onCancel?: () => void;
 }
 
-export function CheckInForm({ onSuccess, initialMood = null, onCancel }: CheckInFormProps) {
-  const { mood, setMood, activity, setActivity, submit, isSubmitting, isValid } = useCheckinForm(initialMood);
+export function CheckInForm({ onSuccess, onCancel }: CheckInFormProps) {
+  const { mood, setMood, activity, setActivity, submit, isSubmitting, isValid } = useCheckinForm();
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
 
