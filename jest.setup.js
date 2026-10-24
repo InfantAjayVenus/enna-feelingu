@@ -42,3 +42,16 @@ jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
   hide: jest.fn(),
 }));
+
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn().mockResolvedValue(null),
+  setItemAsync: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('expo-local-authentication', () => ({
+  hasHardwareAsync: jest.fn().mockResolvedValue(true),
+  isEnrolledAsync: jest.fn().mockResolvedValue(true),
+  getEnrolledLevelAsync: jest.fn().mockResolvedValue(3), // SecurityLevel.BIOMETRIC_STRONG
+  authenticateAsync: jest.fn().mockResolvedValue({ success: true }),
+  SecurityLevel: { NONE: 0, SECRET: 1, BIOMETRIC_WEAK: 2, BIOMETRIC_STRONG: 3 },
+}));
