@@ -51,6 +51,15 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
           }}
         />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="settings" size={28} color={color} />
+            ),
+          }}
+        />
       </Tabs>
 
       <PressScale
