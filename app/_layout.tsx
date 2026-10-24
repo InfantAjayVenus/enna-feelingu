@@ -10,6 +10,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+
+import { useAppLock } from '@/hooks/use-app-lock';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -45,6 +47,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const scheme = colorScheme === 'dark' ? 'dark' : 'light';
   const theme = createNavTheme(scheme);
+  const { lockState } = useAppLock();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -58,7 +61,9 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  // Render nothing while fonts are loading, while checking the lock preference,
+  // or while the app is locked. The OS biometric sheet floats above on its own.
+  if (!fontsLoaded || lockState === 'checking' || lockState === 'locked') {
     return null;
   }
 
